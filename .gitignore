@@ -37,3 +37,6 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# personal data from assessors
+Data/tech_assessors.xlsx
