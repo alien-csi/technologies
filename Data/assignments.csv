@@ -1,0 +1,54 @@
+"Assessors","Gamification","Social media mining","Machine learning","Artificial intelligence","Image analysis satellites","Google Street view","Augmented reality","Virtual reality","Neural marketing","DNA-based technologies","Drones","Wildlife cameras","Acoustic analysis","Adaptive sampling","Technologies to increase data quality and reduce uncertainty","Data aggregation software and visualisation and analysis tools","GPS tracking devices","Mobile-based data collection platforms","Digital twins","Low earth orbit ultrafast broadband","Collective intelligence","AI analysis on sensors","Social media","Acoustic hardware","Open source hardware","Internet of things","Increased accessibility of open data, open source, open APIs and accessible software platforms","Advanced natural language generation (GPT-3 etc)","Push Notifications","Chatbot","eNose technology","Data exchange tools (machine readibility, computational interaction)","Specific tools for sensory impaired citizen scientists","Computational infrastructure to handle big volumes of data","Robots","3D technology to improve CS experience","visual storytelling - design","ecological interaction approaches","Data analysis to reveal early signals of establishment or spread of not yet invasive alien species"
+"Sven Schade <s.schade@ec.europa.eu>",0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,1,0
+"alexis.joly@inria.fr",0,0,1,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0,0
+"Pierre BONNET <pierre.bonnet@cirad.fr>",0,0,1,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,0,1,1,0
+"stefan.daume@ecoveillance.org",0,0,0,0,0,1,0,1,1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,0,1,1,0,0,0,1,0,0,0
+"Jodi Rowley <Jodi.Rowley@australian.museum>",1,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0
+"Lawson-Handley Lori <l.lawson-handley@hull.ac.uk>",0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0
+"arnau.campanera@ctfc.es",0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0
+"Quentin Groom <quentin.groom@plantentuinmeise.be>",0,0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,1,0,0,0,1,1,0,0,1,1,0,0,1,0,0,0,0,0,1,0,0,0,0
+"Wouter Koch <wouter.koch@artsdatabanken.no>",0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,0,0,1,0,0,0,1,0,0,0,0
+"Jaric Ivan <ivan.jaric@hbu.cas.cz>",0,1,1,0,1,0,0,1,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0
+"adam.gauci@um.edu.mt",0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0
+"Jim Casaer <jim.casaer@inbo.be>",0,0,1,1,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1,1,0,0,0,0,1
+"ADRIAENS Tim <tim.adriaens@inbo.be>",0,0,0,0,0,1,0,0,1,0,1,0,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0
+"Bernat Claramunt <bernat@creaf.uab.cat>",0,0,0,0,0,0,0,0,0,1,0,1,0,0,1,0,1,0,0,1,1,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,1
+"CARDOSO Ana-Cristina <ana-cristina.cardoso@ec.europa.eu>",0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,1,1,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,1,0
+"Eugenio.GERVASINI@ec.europa.eu",0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,1,0
+"Michelle Cleary <michelle.cleary@slu.se>",0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,1,0,0,0,0,1
+"franz essl <franz.essl@univie.ac.at>",0,1,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,1,1,0,0,1,0,0
+"RIES Christian <CRIES@mnhn.lu>",0,0,1,0,0,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0
+"benoit.pisanu@mnhn.fr",0,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,1,1
+"Pavel Pipek <ppipek@gmail.com>",1,0,0,0,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,1,0,1,0,0,1,0,0,0,0,0,0,0,1
+"nchartos@ucy.ac.cy",0,1,1,0,0,1,1,1,0,0,0,0,0,0,0,1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+"Kelly Martinou <af.martinou@gmail.com>",0,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,1,0,1,0,0,1
+"Pergl Jan <jan.pergl@ibot.cas.cz>",0,0,0,0,0,1,1,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,1,0,1,0,0,0,0,0,0,0
+"Maarten De Groot <maarten.degroot@gozdis.si>",0,0,0,0,0,1,0,0,0,0,0,0,1,0,1,1,1,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,1,0
+"Brown  Peter <Peter.Brown@aru.ac.uk>",0,0,0,0,0,0,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1
+"Elizabete Marchante <elizabete.marchante@gmail.com>",0,0,1,0,0,1,0,0,0,1,0,0,1,1,0,0,0,1,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0
+"rfarrow@lincoln.ac.uk",0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,0,0,0,1,1,0,1,0,0,1,0,0,0,0,1
+"Baudewijn Ode <ode@floron.nl>",0,1,0,0,1,0,0,1,1,0,0,0,0,0,1,0,1,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0
+"Paraskevi Karachle <pkarachle@hcmr.gr>",0,0,0,0,1,0,1,1,0,0,1,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1
+"Valentina La Morgia <valentina.lamorgia@isprambiente.it>",1,0,0,0,0,0,0,0,1,1,0,0,0,0,1,0,0,1,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+"Iolanda Rocha <irocha@cibio.up.pt>",0,1,1,0,0,0,0,0,1,0,0,0,1,0,1,1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0
+"Johan.Schutten@sepa.org.uk",1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0
+"Davison  Brian <B.Davison@napier.ac.uk>",0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,1,1,1,1,0,0,0
+"Cristina Preda <cristina.preda2008@gmail.com>",0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,1,0,1,1,1,0,0,0,1,0,0,0,1,0,0,0,0,0
+"Sofie Meeus <sofie.meeus@plantentuinmeise.be>",1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,1,0,1,0,0,1,0,0,0,0,1
+"Toril Loennechen Moen <toril.moen@artsdatabanken.no>",0,1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,0,1,0,0,1,0,1,0,0
+"Lien Reyserhove <lien.reyserhove@inbo.be>",1,0,0,0,0,1,0,0,0,0,1,0,1,0,1,1,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0
+"Sandro Bertolino <sandro.bertolino@unito.it>",0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,0,0,1,0
+"Riccardo Scalera <scalera.riccardo@gmail.com>",0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,1,1,0,1,1
+"jsvicente@fc.up.pt",1,0,0,0,0,0,0,0,1,0,1,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,1,1,0,0,0,1,0,0,0,0,0,0
+"van Rees Charles <charles.vanrees@flbs.umt.edu>",0,1,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,1,0,0,1,0,0,0,0,1,0,1,0,0,0
+"Laurens Hogeweg <laurens.hogeweg@naturalis.nl>",1,0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1
+"jodi.rowley@unsw.edu.au",1,0,0,1,0,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,0,1,1,0,0,0
+"August  Tom <tomaug@ceh.ac.uk>",0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,1,1,1,0,1,1,1,0,0
+"Pocock  Michael J.O. <michael.pocock@ceh.ac.uk>",0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0,1,1,0,1,0,0,1,0,0,0,0,0,0
+"Peyton  Jodey M. <joyt@ceh.ac.uk>",0,1,0,1,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,1,0
+"Ana Andjelkovic ana.andjelkovic21@gmail.com",0,1,0,1,0,0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,1,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0
+"Elena Tricarico <elena.tricarico@unifi.it>",0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,0,0,0,1,0,0,0,0,1,0,1,0,0,1,1,0,0
+"Helen Roy <hele@ceh.ac.uk>",0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1
+"Eva Pinto <evamaltapinto@gmail.com>;",0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0
+"Stefan Kahl <sk2487@cornell.edu>,",0,0,1,1,0,0,0,0,1,0,1,0,1,1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0
+"Connor Wood <cmw289@cornell.edu>",0,0,0,0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,1,1,0,0,1,0

@@ -65,3 +65,6 @@ assignments <- assessors %>% bind_cols(assignments)
 
 assignments
 View(assignments)
+
+write.csv(assignments,"C:\\Users\\tim_adriaens\\Documents\\GitHub\\technologies\\Data\\assignments.csv", row.names = FALSE)
+
