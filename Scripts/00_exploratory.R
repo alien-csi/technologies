@@ -19,43 +19,92 @@ recode_plyr <- function(x) {
 }
 
 ## ---- data and data tidying ----
-scores <- read.csv("Data/scores_rev.csv", sep = ";")
+scores <- read_delim("Data/scores_rev.csv", delim = ";")
 scores %>% 
-  rename(date_time = 'X...Tijdstempel',
-         coder = E.mailadres,
-         technology = Select.the.technology.you.need.to.assess) %>% 
-  select(-starts_with("Comments..")) -> scores
+  rename(date_time = 'Tijdstempel',
+         coder = 'E-mailadres',
+         technology = 'Select the technology you need to assess') %>% 
+  select(-starts_with("Comments")) -> scores
 distinct(scores["technology"]) -> techs
 scores[ scores == "" ] <- NA
 
-temp <- vector("list", dim(techs)[1])
-i = 1
-while (i <= dim(techs)[1]) {
-  scores %>% 
-    filter(technology == techs[i,1]) %>% 
-    select(where(not_all_na)) -> temp[[i]]
-  colnames(temp[[i]]) <- c("date_time",
-                           "coder",
-                           "technology",
-                           "audience",
-                           "engagement_others",
-                           "engagement_feedback",
-                           "application",
-                           "new_data",
-                           "extend_data",
-                           "improve_quality",
-                           "improve_flow",
-                           "improve_curation")
-  i = i + 1
+# temp <- vector("list", dim(techs)[1])
+# i = 1
+# while (i <= dim(techs)[1]) {
+#   scores %>% 
+#     filter(technology == techs[i,1]) %>% 
+#     select(where(not_all_na)) -> temp[[i]]
+  # colnames(temp[[i]]) <- c("date_time",
+  #                          "coder",
+  #                          "technology",
+  #                          "audience",
+  #                          "engagement_others",
+  #                          "engagement_feedback",
+  #                          "application",
+  #                          "new_data",
+  #                          "extend_data",
+  #                          "improve_quality",
+  #                          "improve_flow",
+  #                          "improve_curation")
+#   i = i + 1
+# }
+
+scores <- scores %>% 
+  mutate(technology = case_when(technology == "Social media" ~ 
+                                  "Social media have",
+                                technology == "Social media mining" ~ 
+                                  "Social media mining has",
+                                technology == "3D technology to improve experience" ~ 
+                                  "3D technology to improve CS experience",
+                                TRUE ~ technology))
+
+techs$technology[1] <- "Social media have"
+techs$technology[35] <- "3D technology to improve CS experience"
+techs$technology[39] <- "Social media mining has"
+
+temp <- data.frame()
+
+for(t in techs$technology){
+  if(is.na(t)){
+    next
+  }
+  sub <- scores %>% 
+    filter(technology == t) %>% 
+    select(date_time, 
+           coder,
+           technology,
+           matches(t))
+  
+  colnames(sub) <- c("date_time",
+                      "coder",
+                      "technology",
+                      "audience",
+                      "engagement_others",
+                      "engagement_feedback",
+                      "application",
+                      "new_data",
+                      "extend_data",
+                      "improve_quality",
+                      "improve_flow",
+                      "improve_curation")
+  
+  if(nrow(temp) == 0){
+    temp <- sub
+  }else{
+    temp <- rbind(temp, sub)
+  }
 }
-bind_rows(temp) -> scores_tidy
+
+
+
+#bind_rows(temp) -> scores_tidy
 
 ## ---- data: recode to numeric ----
-as.data.frame(sapply(scores_tidy[,4:12], recode_plyr)) -> scores_rec
-bind_cols(scores_tidy[,1:3],scores_rec) -> scores_num
+sapply(temp[,4:12], recode_plyr) -> scores_rec
+bind_cols(temp[,1:3],scores_rec) -> scores_num
 
 ## ---- data:long formats ----
-scores_tidy %>% 
+temp %>% 
   pivot_longer(
     cols = audience:improve_curation,
     names_to = "criterion",
@@ -71,7 +120,7 @@ scores_num %>%
 
 
 ## ---- assessors (coders) per technology ----
-scores_tidy %>% 
+temp %>% 
   group_by(technology) %>% 
   summarise(n = n()) -> summary_coders_tech
 
