@@ -198,3 +198,137 @@ scores_num %>%
 icc(as.data.frame(prova), model="twoway", type="agreement")
 kripp.alpha(t(prova), method = "ordinal")
 
+#Fleiss kappa as an index of inter-rater agreement between m raters on categorical data
+#kappam.fleiss(prova)
+#scores_num
+
+# piece of code taken from manageability analysis
+# Interrater Reliability is the degree of agreement among raters. It is a score of how much homogeneity or consensus exists in the ratings given by various judges (wiki).
+# # There are a number of statistics that can be used to determine inter-rater reliability, we will test:
+# 1. Krippendorff's alpha
+# 2. Cronbachs alfa
+# 3. Cohen's Kappa
+
+# # 1. Krippendorff's alpha
+# 
+# ## Per species
+
+# # every row of the input matrix is one observer
+# species_un <- unique(assessment_results$species)
+# 
+# per_species_erad <- as.data.frame(species_un)
+# 
+# for (i in 1:length(species_un)) {
+#   set1 <- assessment_results %>% 
+#     filter(species == species_un[i],
+#            scenario == "eradication") %>%
+#     select(assessor, criterium, score) %>% 
+#     spread(criterium, score) %>% 
+#     select(-assessor) %>% 
+#     as.matrix()
+#   
+#   per_species_erad$kr_alpha[i] <- kripp.alpha(set1, method = "ordinal")$value 
+# }
+# 
+# data.table(per_species_erad)
+# 
+# Acceptable levels only for three species: Ondatra zibethicus (0.787), Sciurus niger (0.700) and Gunnera tinctoria (0.690).
+# 
+# per_species_spread <- as.data.frame(species_un) %>% 
+#   mutate(kr_alpha = NA)
+# 
+# for (i in 1:length(species_un)) {
+#   set1 <- assessment_results %>% 
+#     filter(species == species_un[i],
+#            scenario == "spread limitation") %>%
+#     select(assessor, criterium, score) %>% 
+#     spread(criterium, score) %>% 
+#     select(-assessor) %>% 
+#     as.matrix()
+#   
+#   per_species_spread$kr_alpha[i] <- kripp.alpha(set1, method = "ordinal")$value 
+# }
+# 
+# data.table(per_species_spread)
+# 
+# Acceptable levels only for two species: Gunnera tinctoria (0.846) en Ondatra zibethicus (0.680).
+# 
+# ## Per functional group
+# 
+# Doubtfull if this is allowed, since the same assesors scored multiple species.
+# combo_un <- unique(assessment_results$combo)
+# 
+# per_combo <- as.data.frame(rep(combo_un,2))
+# 
+# for (i in 1:length(combo_un)) {
+#   set1 <- assessment_results %>% 
+#     filter(combo == combo_un[i],
+#            scenario == "eradication") %>%
+#     mutate(ID = paste(assessor, species)) %>% 
+#     select(ID, criterium, score) %>% 
+#     spread(criterium, score) %>% 
+#     select(-ID) %>% 
+#     as.matrix()
+#   
+#   per_combo$scen <- "eradication"
+#   per_combo$kr_alpha[i] <- kripp.alpha(set1, method = "ordinal")$value
+# }
+# 
+# for (i in 1:length(combo_un)) {
+#   set1 <- assessment_results %>% 
+#     filter(combo == combo_un[i],
+#            scenario == "spread limitation") %>%
+#     mutate(ID = paste(assessor, species)) %>% 
+#     select(ID, criterium, score) %>% 
+#     spread(criterium, score) %>% 
+#     select(-ID) %>% 
+#     as.matrix()
+#   
+#   per_combo$scen[i + 4] <- "spread limitation"
+#   per_combo$kr_alpha[i + 4] <- kripp.alpha(set1, method = "ordinal")$value
+# }
+# 
+# data.table(per_combo)
+# 
+# All very low, what is the effect of looking only at feasibility?
+#   
+# per_combo_fs <- as.data.frame(rep(combo_un,2))
+# 
+# for (i in 1:length(combo_un)) {
+#   set1 <- assessment_results %>% 
+#     filter(combo == combo_un[i],
+#            scenario == "eradication") %>%
+#     mutate(ID = paste(assessor, species)) %>% 
+#     select(ID, criterium, score) %>% 
+#     spread(criterium, score) %>%
+#     mutate(feasibility = (acceptability + cost + effectiveness + impact +
+#                             `likelihood of reintroduction` + practicality + 
+#                             `window of opportunity`)/7) %>% 
+#     select(feasibility) %>% 
+#     as.matrix()
+#   
+#   per_combo_fs$scen <- "eradication"
+#   per_combo_fs$kr_alpha[i] <- kripp.alpha(set1, method = "ordinal")$value
+# }
+# 
+# for (i in 1:length(combo_un)) {
+#   set1 <- assessment_results %>% 
+#     filter(combo == combo_un[i],
+#            scenario == "spread limitation") %>%
+#     mutate(ID = paste(assessor, species)) %>% 
+#     select(ID, criterium, score) %>% 
+#     spread(criterium, score) %>%
+#     mutate(feasibility = (acceptability + cost + effectiveness + impact +
+#                             `likelihood of reintroduction` + practicality + 
+#                             `window of opportunity`)/7) %>% 
+#     select(feasibility) %>% 
+#     as.matrix()
+#   
+#   per_combo_fs$scen[i + 4] <- "spread limitation"
+#   per_combo_fs$kr_alpha[i + 4] <- kripp.alpha(set1, method = "ordinal")$value
+# }
+# 
+# data.table(per_combo_fs)
+# 
+# Alpha is even lower, Krippendorff's alpha should be used to compare differnt measurements per observation.
+# 
