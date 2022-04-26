@@ -7,6 +7,7 @@
 ## ---- packages ----
 library(tidyverse)
 library(ggpubr)
+library(irr)
 
 ## ---- functions ----
 not_all_na <- function(x) any(!is.na(x))
@@ -48,6 +49,7 @@ scores[ scores == "" ] <- NA
   #                          "improve_curation")
 #   i = i + 1
 # }
+#bind_rows(temp) -> scores_tidy
 
 scores <- scores %>% 
   mutate(technology = case_when(technology == "Social media" ~ 
@@ -96,12 +98,9 @@ for(t in techs$technology){
 }
 
 
-
-#bind_rows(temp) -> scores_tidy
-
 ## ---- data: recode to numeric ----
 sapply(temp[,4:12], recode_plyr) -> scores_rec
-bind_cols(temp[,1:3],scores_rec) -> scores_num
+bind_cols(temp[,1:3],as.data.frame(scores_rec)) -> scores_num
 
 ## ---- data:long formats ----
 temp %>% 
@@ -123,18 +122,19 @@ scores_num %>%
 temp %>% 
   group_by(technology) %>% 
   summarise(n = n()) -> summary_coders_tech
+# write.csv(summary_coders_tech, "output/summary_coders_tech.csv")
 
 summary_coders_tech %>% 
   ggplot(aes(reorder(technology, n), n)) + 
   geom_col(aes(fill = n)) +
-  scale_fill_gradient2(low = "red",
-                       high = "blue",
-                       midpoint = 4) +
+  scale_fill_gradient2(low = "blue",
+                       high = "red") +
   coord_flip() + 
-  theme_minimal() + 
-  # scale_x_continuous(breaks = c(2,4,6,8,10,12)) +
-  labs(x = "Technology")
-
+  theme_minimal() +
+  scale_y_continuous(breaks = c(2,4,6,8,10,12)) +
+  labs(x = "Technology", y = "No. of coders")
+# ggsave("summary_coders_tech.tiff",
+#        dpi=300, compression = 'lzw')
 
 ## ---- no. 'I don't know' per technology ----
 # scores_tidy[scores_tidy == "I don't know"]
@@ -154,13 +154,14 @@ scores_tidy_long %>%
 unknown %>% 
   ggplot(aes(reorder(technology, tot), tot)) + 
   geom_col(aes(fill = tot)) +
-  scale_fill_gradient2(low = "red",
-                       high = "blue",
-                       midpoint = 4) +
+  scale_fill_gradient2(low = "blue",
+                       high = "red") +
   coord_flip() + 
   theme_minimal() + 
-  # scale_x_continuous(breaks = c(2,4,6,8,10,12)) +
-  labs(x = "Technology")
+  scale_y_continuous(breaks = c(2,4,6,8,10,12)) +
+  labs(x = "Technology", y = "No. of I don't know / N/A")
+# ggsave("figs/summary_unknowns.tiff",
+#        dpi=300, compression = 'lzw')
 
 
 ## ---- basic stats ----
@@ -173,30 +174,68 @@ scores_num_long %>%
             q3 = quantile(rank, 0.75, na.rm = TRUE),
             max = max(rank, na.rm = TRUE))
 
-# grouped violinplots
-scores_num_long %>% 
-  filter(technology == techs[1,1]) %>% 
-  ggplot(aes(x=criterion, y=rank)) + 
-  geom_violin() 
+## ---- stats and plots per tech ----
 
-# balloon plots
-scores_num_long %>% 
-  group_by(technology, criterion, rank) %>% 
-  summarise(Freq=n()) %>% 
-  filter(technology == techs[2,1]) -> prova
-ggballoonplot(prova, x = "criterion", y = "rank",
-              fill = "Freq", size = "Freq",
-              ggtheme = theme_gray())
+i = 1
 
+icc_value <- vector("numeric",dim(techs)[1])
+icc_lbound <- vector("numeric",dim(techs)[1])
+icc_ubound <- vector("numeric",dim(techs)[1])
+kripp_value <- vector("numeric",dim(techs)[1])
 
-## ---- icc ----
-library(irr)
-scores_num %>% 
-  filter(technology == techs[1,1]) %>% 
-  select(audience:improve_curation) %>% 
-  t() -> prova
-icc(as.data.frame(prova), model="twoway", type="agreement")
-kripp.alpha(t(prova), method = "ordinal")
+while (i <= dim(techs)[1]) {
+  tech_plot <- techs[[i,1]]
+  # grouped violinplots
+  scores_num_long %>% 
+    filter(technology == tech_plot) %>% 
+    ggplot(aes(x=criterion, y=rank)) + 
+    scale_x_discrete(guide = guide_axis(angle = 45)) +
+    labs(title = tech_plot) +
+    geom_violin() 
+  ggsave(paste("figs/",tech_plot,"_violin.tiff",sep=""),
+         dpi=300, compression = 'lzw')
+  # balloon plots
+  scores_num_long %>% 
+    group_by(technology, criterion, rank) %>% 
+    summarise(Freq=n()) %>% 
+    filter(technology == tech_plot) -> pp
+  # dim(pp)
+  ggballoonplot(pp, x = "criterion", y = "rank",
+                fill = "Freq", size = "Freq",
+                ggtheme = theme_gray()) +
+    scale_y_continuous(limits = c(1,5)) +
+    labs(title = tech_plot)
+  ggsave(paste("figs/",tech_plot,"_balloon.tiff",sep=""),
+         dpi=300, compression = 'lzw')
+  ## ---- icc and Krippendorf's ----
+  scores_num %>% 
+    filter(technology == tech_plot) %>% 
+    select(audience:improve_curation) %>% 
+    t() -> scores_matrix
+  icc(as.data.frame(scores_matrix), type="agreement",
+      model="twoway", unit = "average") -> icc_tech
+  kripp.alpha(t(scores_matrix), method = "ordinal") -> kripp_alpha_tech
+  
+  icc_value[i] <- icc_tech$value
+  icc_lbound[i] <- icc_tech$lbound
+  icc_ubound[i] <- icc_tech$ubound
+  kripp_value[i] <- kripp_alpha_tech$value
+  
+  i = i + 1
+} 
+
+data.frame(
+  technology = techs[[1]],
+  icc = icc_value,
+  icc.lbound = icc_lbound,
+  icc.ubound = icc_ubound,
+  kripp = kripp_value
+) -> irr_table_temp
+
+left_join(irr_table_temp, summary_coders_tech) %>% 
+  rename(no.coders = n) -> irr_table
+write.csv(irr_table, "output/irr_table.csv")
+
 
 #Fleiss kappa as an index of inter-rater agreement between m raters on categorical data
 #kappam.fleiss(prova)
