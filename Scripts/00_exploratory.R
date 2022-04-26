@@ -19,7 +19,7 @@ recode_plyr <- function(x) {
 }
 
 ## ---- data and data tidying ----
-scores <- read.csv("data/scores_rev.csv", sep = ";")
+scores <- read.csv("Data/scores_rev.csv", sep = ";")
 scores %>% 
   rename(date_time = 'X...Tijdstempel',
          coder = E.mailadres,
