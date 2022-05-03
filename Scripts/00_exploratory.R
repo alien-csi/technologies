@@ -8,6 +8,7 @@
 library(tidyverse)
 library(ggpubr)
 library(irr)
+library(lme4)
 
 ## ---- functions ----
 not_all_na <- function(x) any(!is.na(x))
@@ -165,6 +166,16 @@ unknown %>%
 
 
 ## ---- basic stats ----
+# per criteria, regardless of technology
+scores_num_long %>% 
+  group_by(criterion) %>% 
+  summarise(min = min(rank, na.rm = TRUE),
+            q1 = quantile(rank, 0.25, na.rm = TRUE),
+            median = median(rank, na.rm = TRUE),
+            mean = mean(rank, na.rm=TRUE),
+            q3 = quantile(rank, 0.75, na.rm = TRUE),
+            max = max(rank, na.rm = TRUE))
+
 scores_num_long %>% 
   group_by(technology, criterion) %>% 
   summarise(min = min(rank, na.rm = TRUE),
@@ -174,6 +185,37 @@ scores_num_long %>%
             q3 = quantile(rank, 0.75, na.rm = TRUE),
             max = max(rank, na.rm = TRUE))
 
+
+## ---- stats and plots per criteria ----
+dim(scores_num_long)
+# regardless of technology
+scores_num_long %>% 
+  ggplot(aes(x=criterion, y=rank)) + 
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  geom_violin() 
+ggsave("figs/criteria_violin.tiff",
+       dpi=300, compression = 'lzw')
+# balloon plots
+scores_num_long %>% 
+  group_by(criterion, rank) %>% 
+  summarise(Freq=n()) -> pp
+# dim(pp)
+ggballoonplot(pp, x = "criterion", y = "rank",
+              fill = "Freq", size = "Freq",
+              ggtheme = theme_gray()) +
+  scale_y_continuous(limits = c(1,5))
+ggsave("figs/criteria_balloon.tiff",
+       dpi=300, compression = 'lzw')
+
+scores_num %>%
+  select(audience:improve_curation) %>%
+  t() -> scores_matrix
+# icc(as.data.frame(scores_matrix), type="consistency",
+#     model="twoway", unit = "average") -> icc_crit
+kripp.alpha(t(scores_matrix), method = "ordinal") -> kripp_alpha_crit
+kripp_alpha_crit # doesn't make sense to measure agreement across technologies
+kappam.fleiss(scores_matrix)
+
 ## ---- stats and plots per tech ----
 
 i = 1
@@ -182,44 +224,81 @@ icc_value <- vector("numeric",dim(techs)[1])
 icc_lbound <- vector("numeric",dim(techs)[1])
 icc_ubound <- vector("numeric",dim(techs)[1])
 kripp_value <- vector("numeric",dim(techs)[1])
+fleiss_value <- vector("numeric",dim(techs)[1])
+fleiss_z <- vector("numeric",dim(techs)[1])
+fleiss_p <- vector("numeric",dim(techs)[1])
+n <- vector("numeric",dim(techs)[1])
+anova.s <- vector("list",dim(techs)[1])
+p_anova <- vector("numeric",dim(techs)[1])
 
 while (i <= dim(techs)[1]) {
   tech_plot <- techs[[i,1]]
-  # grouped violinplots
-  scores_num_long %>% 
-    filter(technology == tech_plot) %>% 
-    ggplot(aes(x=criterion, y=rank)) + 
-    scale_x_discrete(guide = guide_axis(angle = 45)) +
-    labs(title = tech_plot) +
-    geom_violin() 
-  ggsave(paste("figs/",tech_plot,"_violin.tiff",sep=""),
-         dpi=300, compression = 'lzw')
-  # balloon plots
-  scores_num_long %>% 
-    group_by(technology, criterion, rank) %>% 
-    summarise(Freq=n()) %>% 
-    filter(technology == tech_plot) -> pp
-  # dim(pp)
-  ggballoonplot(pp, x = "criterion", y = "rank",
-                fill = "Freq", size = "Freq",
-                ggtheme = theme_gray()) +
-    scale_y_continuous(limits = c(1,5)) +
-    labs(title = tech_plot)
-  ggsave(paste("figs/",tech_plot,"_balloon.tiff",sep=""),
-         dpi=300, compression = 'lzw')
-  ## ---- icc and Krippendorf's ----
+  # # grouped violinplots
+  # scores_num_long %>% 
+  #   filter(technology == tech_plot) %>% 
+  #   ggplot(aes(x=criterion, y=rank)) + 
+  #   scale_x_discrete(guide = guide_axis(angle = 45)) +
+  #   labs(title = tech_plot) +
+  #   geom_violin() 
+  # ggsave(paste("figs/",tech_plot,"_violin.tiff",sep=""),
+  #        dpi=300, compression = 'lzw')
+  # # balloon plots
+  # scores_num_long %>% 
+  #   group_by(technology, criterion, rank) %>% 
+  #   summarise(Freq=n()) %>% 
+  #   filter(technology == tech_plot) -> pp
+  # # dim(pp)
+  # ggballoonplot(pp, x = "criterion", y = "rank",
+  #               fill = "Freq", size = "Freq",
+  #               ggtheme = theme_gray()) +
+  #   scale_y_continuous(limits = c(1,5)) +
+  #   labs(title = tech_plot)
+  # ggsave(paste("figs/",tech_plot,"_balloon.tiff",sep=""),
+  #        dpi=300, compression = 'lzw')
+  
+  ## ---- icc, Krippendorf's , Fleiss ----
   scores_num %>% 
     filter(technology == tech_plot) %>% 
     select(audience:improve_curation) %>% 
     t() -> scores_matrix
-  icc(as.data.frame(scores_matrix), type="agreement",
-      model="twoway", unit = "average") -> icc_tech
-  kripp.alpha(t(scores_matrix), method = "ordinal") -> kripp_alpha_tech
-  
-  icc_value[i] <- icc_tech$value
-  icc_lbound[i] <- icc_tech$lbound
-  icc_ubound[i] <- icc_tech$ubound
-  kripp_value[i] <- kripp_alpha_tech$value
+  matrix <- na.omit(scores_matrix)
+  if (dim(matrix)[1] != 0) {
+    icc(as.data.frame(matrix), type="consistency",
+        model="twoway", unit = "average") -> icc_tech
+    kripp.alpha(t(matrix), method = "ordinal") -> kripp_alpha_tech
+    kappam.fleiss(matrix) -> fleiss_tech
+    
+    ## ---- anova ----
+    na.omit(scores_num_long) %>% 
+      filter(technology == tech_plot) -> dataset_long
+    lmer(rank ~ coder + (1 | criterion), data = dataset_long, REML=TRUE) -> mod
+    # summary(lmer(rank ~ coder + (1 | criterion), data = dataset_long, REML=TRUE)) -> mod.summary
+    anova(lmer(rank ~ coder + (1 | criterion), data = dataset_long, REML=TRUE)) -> anova.s[[i]]
+    qf(p=.05, df1=8, df2=dim(mod@frame)[1]-9, lower.tail=FALSE) -> threshold
+    # The degrees of freedom for the numerator are the degrees of freedom for the between group (k-1)
+    # and the degrees of freedom for the denominator are the degrees of freedom 
+    # for the within group (N-k)
+    if (anova.s[[i]]$`F value` > threshold) p_anova[i] <- "< 0.05" else p_anova[i] <- NA
+
+    icc_value[i] <- icc_tech$value
+    icc_lbound[i] <- icc_tech$lbound
+    icc_ubound[i] <- icc_tech$ubound
+    kripp_value[i] <- kripp_alpha_tech$value
+    fleiss_value[i] <- fleiss_tech$value
+    fleiss_z[i] <- fleiss_tech$statistic
+    fleiss_p[i] <- fleiss_tech$p.value
+    n[i] <- fleiss_tech$raters
+    
+  } else {
+    icc_value[i] <- NA
+    icc_lbound[i] <- NA
+    icc_ubound[i] <- NA
+    kripp_value[i] <- NA
+    fleiss_value[i] <- NA
+    fleiss_z[i] <- NA
+    fleiss_p[i] <- NA
+    n[i] <- NA
+  }
   
   i = i + 1
 } 
@@ -229,12 +308,20 @@ data.frame(
   icc = icc_value,
   icc.lbound = icc_lbound,
   icc.ubound = icc_ubound,
-  kripp = kripp_value
+  kripp = kripp_value,
+  fleiss = fleiss_value,
+  fleiss.z = fleiss_z,
+  fleiss.p = fleiss_p,
+  p.anova = p_anova,
+  num = n
 ) -> irr_table_temp
 
 left_join(irr_table_temp, summary_coders_tech) %>% 
   rename(no.coders = n) -> irr_table
-write.csv(irr_table, "output/irr_table.csv")
+write.csv(irr_table, "output/irr_table_new.csv")
+
+## Fleiss: a significant p-value means the stat is significantly different from 0 (agreement)
+
 
 
 #Fleiss kappa as an index of inter-rater agreement between m raters on categorical data
