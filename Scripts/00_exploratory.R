@@ -18,6 +18,7 @@ recode_plyr <- function(x) {
                                          "Neither agree nor disagree",
                                          "Agree", "Strongly agree"),
                              to = c(1,2,3,4,5)))
+  # please note: 'I don't know' and 'N/A' -> NA
 }
 
 ## ---- data and data tidying ----
@@ -233,19 +234,21 @@ p_anova <- vector("numeric",dim(techs)[1])
 
 while (i <= dim(techs)[1]) {
   tech_plot <- techs[[i,1]]
+  
   # # grouped violinplots
-  # scores_num_long %>% 
-  #   filter(technology == tech_plot) %>% 
-  #   ggplot(aes(x=criterion, y=rank)) + 
+  # scores_num_long %>%
+  #   filter(technology == tech_plot) %>%
+  #   ggplot(aes(x=criterion, y=rank)) +
   #   scale_x_discrete(guide = guide_axis(angle = 45)) +
   #   labs(title = tech_plot) +
-  #   geom_violin() 
+  #   geom_violin()
   # ggsave(paste("figs/",tech_plot,"_violin.tiff",sep=""),
   #        dpi=300, compression = 'lzw')
+  # 
   # # balloon plots
-  # scores_num_long %>% 
-  #   group_by(technology, criterion, rank) %>% 
-  #   summarise(Freq=n()) %>% 
+  # scores_num_long %>%
+  #   group_by(technology, criterion, rank) %>%
+  #   summarise(Freq=n()) %>%
   #   filter(technology == tech_plot) -> pp
   # # dim(pp)
   # ggballoonplot(pp, x = "criterion", y = "rank",
@@ -261,12 +264,23 @@ while (i <= dim(techs)[1]) {
     filter(technology == tech_plot) %>% 
     select(audience:improve_curation) %>% 
     t() -> scores_matrix
+  
+  # Fleiss doesn't cope well with NAs
   matrix <- na.omit(scores_matrix)
   if (dim(matrix)[1] != 0) {
-    icc(as.data.frame(matrix), type="consistency",
-        model="twoway", unit = "average") -> icc_tech
-    kripp.alpha(t(matrix), method = "ordinal") -> kripp_alpha_tech
     kappam.fleiss(matrix) -> fleiss_tech
+    fleiss_value[i] <- fleiss_tech$value
+    fleiss_z[i] <- fleiss_tech$statistic
+    fleiss_p[i] <- fleiss_tech$p.value
+  } else {
+    fleiss_value[i] <- NA
+    fleiss_z[i] <- NA
+    fleiss_p[i] <- NA
+  }
+  
+    icc(as.data.frame(scores_matrix), type="consistency",
+        model="twoway", unit = "average") -> icc_tech
+    kripp.alpha(t(scores_matrix), method = "ordinal") -> kripp_alpha_tech
     
     ## ---- anova ----
     na.omit(scores_num_long) %>% 
@@ -284,21 +298,7 @@ while (i <= dim(techs)[1]) {
     icc_lbound[i] <- icc_tech$lbound
     icc_ubound[i] <- icc_tech$ubound
     kripp_value[i] <- kripp_alpha_tech$value
-    fleiss_value[i] <- fleiss_tech$value
-    fleiss_z[i] <- fleiss_tech$statistic
-    fleiss_p[i] <- fleiss_tech$p.value
-    n[i] <- fleiss_tech$raters
-    
-  } else {
-    icc_value[i] <- NA
-    icc_lbound[i] <- NA
-    icc_ubound[i] <- NA
-    kripp_value[i] <- NA
-    fleiss_value[i] <- NA
-    fleiss_z[i] <- NA
-    fleiss_p[i] <- NA
-    n[i] <- NA
-  }
+    n[i] <- kripp_alpha_tech$raters
   
   i = i + 1
 } 
@@ -318,7 +318,7 @@ data.frame(
 
 left_join(irr_table_temp, summary_coders_tech) %>% 
   rename(no.coders = n) -> irr_table
-write.csv(irr_table, "output/irr_table_new.csv")
+# write.csv(irr_table, "output/irr_table_new.csv")
 
 ## Fleiss: a significant p-value means the stat is significantly different from 0 (agreement)
 
