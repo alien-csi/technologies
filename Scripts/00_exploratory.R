@@ -138,7 +138,7 @@ summary_coders_tech %>%
 # ggsave("summary_coders_tech.tiff",
 #        dpi=300, compression = 'lzw')
 
-## ---- no. 'I don't know' per technology ----
+## ---- no. 'I don't know'/'N/A' per technology ----
 # scores_tidy[scores_tidy == "I don't know"]
 # scores_tidy[scores_tidy == "N/A"] 
 
@@ -164,6 +164,24 @@ unknown %>%
   labs(x = "Technology", y = "No. of I don't know / N/A")
 # ggsave("figs/summary_unknowns.tiff",
 #        dpi=300, compression = 'lzw')
+
+scores_tidy_long %>% 
+  filter(rank == "I don't know" | rank == "N/A") %>%
+  group_by(technology, rank) %>% 
+  count(rank) %>% 
+  summarise(tot = sum(n)) -> unknown_ranks
+unknown_ranks %>% 
+  ggplot(aes(reorder(technology, tot), tot, fill=rank)) + 
+  geom_bar(position="stack", stat="identity") + 
+  scale_fill_manual(values = c("#0073C2FF", "#EFC000FF")) +
+  # geom_col(aes(fill = tot)) +
+  # scale_fill_gradient2(low = "blue",
+                       # high = "red") +
+  coord_flip() + 
+  theme_minimal() + 
+  scale_y_continuous(breaks = c(2,6,10,14,18,22)) +
+  labs(x = "Technology", y = "No. of I don't know / N/A") +
+  theme(legend.title = element_blank())
 
 
 ## ---- basic stats ----
