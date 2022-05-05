@@ -10,93 +10,18 @@ library(ggpubr)
 # library(vegan)
 
 ## ---- functions ----
-not_all_na <- function(x) any(!is.na(x))
-not_any_na <- function(x) all(!is.na(x))
+# not_all_na <- function(x) any(!is.na(x))
+# not_any_na <- function(x) all(!is.na(x))
 recode_plyr <- function(x) {
   as.numeric(plyr::mapvalues(x, from = c("Strongly disagree", "Disagree",
                                          "Neither agree nor disagree",
                                          "Agree", "Strongly agree"),
                              to = c(1,2,3,4,5)))
+  # please note: 'I don't know' and 'N/A' -> NA
 }
 
 ## ---- data and data tidying ----
-scores <- read_delim("Data/scores_rev.csv", delim = ";")
-scores %>% 
-  rename(date_time = 'Tijdstempel',
-         coder = 'E-mailadres',
-         technology = 'Select the technology you need to assess') %>% 
-  select(-starts_with("Comments")) -> scores
-distinct(scores["technology"]) -> techs
-scores[ scores == "" ] <- NA
-
-# temp <- vector("list", dim(techs)[1])
-# i = 1
-# while (i <= dim(techs)[1]) {
-#   scores %>% 
-#     filter(technology == techs[i,1]) %>% 
-#     select(where(not_all_na)) -> temp[[i]]
-# colnames(temp[[i]]) <- c("date_time",
-#                          "coder",
-#                          "technology",
-#                          "audience",
-#                          "engagement_others",
-#                          "engagement_feedback",
-#                          "application",
-#                          "new_data",
-#                          "extend_data",
-#                          "improve_quality",
-#                          "improve_flow",
-#                          "improve_curation")
-#   i = i + 1
-# }
-#bind_rows(temp) -> scores_tidy
-
-scores <- scores %>% 
-  mutate(technology = case_when(technology == "Social media" ~ 
-                                  "Social media have",
-                                technology == "Social media mining" ~ 
-                                  "Social media mining has",
-                                technology == "3D technology to improve experience" ~ 
-                                  "3D technology to improve CS experience",
-                                TRUE ~ technology))
-
-techs$technology[1] <- "Social media have"
-techs$technology[35] <- "3D technology to improve CS experience"
-techs$technology[39] <- "Social media mining has"
-
-temp <- data.frame()
-
-for(t in techs$technology){
-  if(is.na(t)){
-    next
-  }
-  sub <- scores %>% 
-    filter(technology == t) %>% 
-    select(date_time, 
-           coder,
-           technology,
-           matches(t))
-  
-  colnames(sub) <- c("date_time",
-                     "coder",
-                     "technology",
-                     "audience",
-                     "engagement_others",
-                     "engagement_feedback",
-                     "application",
-                     "new_data",
-                     "extend_data",
-                     "improve_quality",
-                     "improve_flow",
-                     "improve_curation")
-  
-  if(nrow(temp) == 0){
-    temp <- sub
-  }else{
-    temp <- rbind(temp, sub)
-  }
-}
-
+temp <- read_delim("output/workshop_individual_ass.csv")[,-1]
 
 ## ---- data: recode to numeric ----
 sapply(temp[,4:12], recode_plyr) -> scores_rec
@@ -125,7 +50,7 @@ scores_num_long %>%
             no.coders = length(unique(coder))) %>% 
   mutate(w.rank = sum.scores / no.coders) %>% 
   arrange(desc(w.rank)) -> rank_sum_tech
-write.csv(rank_sum_tech, "output/rank_sum_tech.csv")
+write.csv(rank_sum_tech, "output/rank_sum_tech_workshop_individual_ass.csv")
 
 ## ---- scores per criteria ----
 scores_num_long %>% 

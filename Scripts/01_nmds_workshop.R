@@ -21,61 +21,7 @@ recode_plyr <- function(x) {
 }
 
 ## ---- data and data tidying ----
-scores <- read_delim("Data/scores_rev.csv", delim = ";")
-scores %>% 
-  rename(date_time = 'Tijdstempel',
-         coder = 'E-mailadres',
-         technology = 'Select the technology you need to assess') %>% 
-  select(-starts_with("Comments")) -> scores
-distinct(scores["technology"]) -> techs
-scores[ scores == "" ] <- NA
-
-scores <- scores %>% 
-  mutate(technology = case_when(technology == "Social media" ~ 
-                                  "Social media have",
-                                technology == "Social media mining" ~ 
-                                  "Social media mining has",
-                                technology == "3D technology to improve experience" ~ 
-                                  "3D technology to improve CS experience",
-                                TRUE ~ technology))
-
-techs$technology[1] <- "Social media have"
-techs$technology[35] <- "3D technology to improve CS experience"
-techs$technology[39] <- "Social media mining has"
-
-temp <- data.frame()
-
-for(t in techs$technology){
-  if(is.na(t)){
-    next
-  }
-  sub <- scores %>% 
-    filter(technology == t) %>% 
-    select(date_time, 
-           coder,
-           technology,
-           matches(t))
-  
-  colnames(sub) <- c("date_time",
-                     "coder",
-                     "technology",
-                     "audience",
-                     "engagement_others",
-                     "engagement_feedback",
-                     "application",
-                     "new_data",
-                     "extend_data",
-                     "improve_quality",
-                     "improve_flow",
-                     "improve_curation")
-  
-  if(nrow(temp) == 0){
-    temp <- sub
-  }else{
-    temp <- rbind(temp, sub)
-  }
-}
-
+temp <- read_delim("output/workshop_individual_ass.csv")[,-1]
 
 ## ---- data: recode to numeric ----
 sapply(temp[,4:12], recode_plyr) -> scores_rec
@@ -155,7 +101,7 @@ nmds.plot.overall +
   geom_segment(data = sig.spp.scrs.overall, aes(x = 0, xend=NMDS1, y=0, yend=NMDS2), arrow = arrow(length = unit(0.25, "cm")), colour = "grey10", lwd=0.3) + #add vector arrows of significant species
   ggrepel::geom_text_repel(data = sig.spp.scrs.overall, aes(x=NMDS1, y=NMDS2, label = Criteria), cex = 3, direction = "both", segment.size = 0.25)+ #add labels for species, use ggrepel::geom_text_repel so that labels do not overlap
   labs(title = "Ordination with criteria vectors")
-ggsave("figs/ordination.tiff",
+ggsave("figs/workshop_individual_ass/ordination.tiff",
        dpi=300, compression = 'lzw')
 
 
@@ -175,14 +121,14 @@ while (i <= dim(techs)[1]) {
     theme(panel.background = element_rect(fill = NA, colour = "black", size = 1, linetype = "solid"))+
     labs(colour = "Technology") +
     scale_x_continuous(limits = c(-0.5,0.9)) +
-    scale_y_continuous(limits = c(-0.5,0.5)) +# add legend labels
-    geom_text(data = NMDS.mean.tech, aes(label = group),
-              position = position_dodge(width=0.9),  size=2)
+    scale_y_continuous(limits = c(-0.5,0.5)) #+# add legend labels
+    # geom_text(data = site.scrs.s, aes(label = group),
+    #           position = position_dodge(width=0.9),  size=2)
   
   nmds.plot +
     # geom_text(label=site.scrs.s$coder, hjust=0, vjust=0, size=2) +
     labs(title = paste("Ordination with criteria vectors: ",tech_plot,sep=""))
-  ggsave(paste("figs/ordination_",tech_plot,".tiff",sep=""), 
+  ggsave(paste("figs/workshop_individual_ass/ordination_",tech_plot,".tiff",sep=""), 
                 dpi=300, compression = 'lzw')
   
   i = i + 1
@@ -255,7 +201,7 @@ nmds.plot.overall1 <- ggplot(NMDS.mean.tech, aes(x=NMDS1, y=NMDS2, label=NMDS.me
   labs(colour = "group") # add legend labels
 # theme(legend.position = "right", legend.text = element_text(size = 12), legend.title = element_text(size = 12), axis.text = element_text(size = 10)) # add legend at right of plot
 nmds.plot.overall1 # + labs(title = "Basic ordination plot")
-ggsave("figs/ordination_centers.tiff",
+ggsave("figs/workshop_individual_ass/ordination_centers.tiff",
        dpi=300, compression = 'lzw')
 
 nmds.plot.overall2 <- ggplot(NMDS.mean.tech, aes(x=NMDS1, y=NMDS2)) + #sets up the plot
@@ -279,7 +225,7 @@ nmds.plot.overall2 +
 plot2 + 
   geom_text(data = NMDS.mean.tech, aes(label = group),
             position = position_dodge(width=0.9),  size=2)
-ggsave("figs/ordination_centers_criteria.tiff",
+ggsave("figs/workshop_individual_ass/ordination_centers_criteria.tiff",
        dpi=300, compression = 'lzw')
 
 

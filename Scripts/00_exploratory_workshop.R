@@ -22,14 +22,17 @@ recode_plyr <- function(x) {
 }
 
 ## ---- data and data tidying ----
-scores <- read_delim("Data/scores_rev.csv", delim = ";")
-scores %>% 
+scores <- read_delim("output/assessments_1stRound.csv")[,-1]
+scores_new <- read_delim("Data/2022-05-05-subset.csv", delim = ";")
+
+scores_new %>% 
   rename(date_time = 'Tijdstempel',
          coder = 'E-mailadres',
          technology = 'Select the technology you need to assess') %>% 
-  select(-starts_with("Comments")) -> scores
-distinct(scores["technology"]) -> techs
-scores[ scores == "" ] <- NA
+  select(-starts_with("Comments")) -> scores_new
+scores_new[ scores_new == "" ] <- NA
+
+distinct(scores_new["technology"]) -> techs_new
 
 # temp <- vector("list", dim(techs)[1])
 # i = 1
@@ -53,7 +56,7 @@ scores[ scores == "" ] <- NA
 # }
 #bind_rows(temp) -> scores_tidy
 
-scores <- scores %>% 
+scores_new <- scores_new %>% 
   mutate(technology = case_when(technology == "Social media" ~ 
                                   "Social media have",
                                 technology == "Social media mining" ~ 
@@ -61,18 +64,20 @@ scores <- scores %>%
                                 technology == "3D technology to improve experience" ~ 
                                   "3D technology to improve CS experience",
                                 TRUE ~ technology))
-
-techs$technology[1] <- "Social media have"
-techs$technology[35] <- "3D technology to improve CS experience"
-techs$technology[39] <- "Social media mining has"
+techs_new$technology
+techs_new$technology[17] <- "Social media have"
+techs_new$technology[5] <- "3D technology to improve CS experience"
+techs_new$technology[28] <- "Social media mining has"
 
 temp <- data.frame()
 
-for(t in techs$technology){
+for(t in techs_new$technology){
+# for(i in 1:length(techs_new$technology)){
+  # t <- techs_new$technology[i]
   if(is.na(t)){
     next
   }
-  sub <- scores %>% 
+  sub <- scores_new %>% 
     filter(technology == t) %>% 
     select(date_time, 
            coder,
@@ -98,7 +103,10 @@ for(t in techs$technology){
     temp <- rbind(temp, sub)
   }
 }
-
+# write.csv(temp, "output/assessments_2ndRound.csv")
+bind_rows(scores, temp) -> temp
+# write.csv(temp, "output/workshop_individual_ass.csv")
+# dim(temp)
 
 ## ---- data: recode to numeric ----
 sapply(temp[,4:12], recode_plyr) -> scores_rec
@@ -119,7 +127,6 @@ scores_num %>%
   ) -> scores_num_long
 
 
-
 ## ---- assessors (coders) per technology ----
 temp %>% 
   group_by(technology) %>% 
@@ -135,7 +142,7 @@ summary_coders_tech %>%
   theme_minimal() +
   scale_y_continuous(breaks = c(2,4,6,8,10,12)) +
   labs(x = "Technology", y = "No. of coders")
-# ggsave("summary_coders_tech.tiff",
+# ggsave("figs/workshop_individual_ass/summary_coders_tech.tiff",
 #        dpi=300, compression = 'lzw')
 
 ## ---- no. 'I don't know' per technology ----
@@ -160,10 +167,30 @@ unknown %>%
                        high = "red") +
   coord_flip() + 
   theme_minimal() + 
-  scale_y_continuous(breaks = c(2,4,6,8,10,12)) +
+  scale_y_continuous(breaks = c(2,6,10,14,18)) +
   labs(x = "Technology", y = "No. of I don't know / N/A")
-# ggsave("figs/summary_unknowns.tiff",
+# ggsave("figs/workshop_individual_ass/summary_unknowns.tiff",
 #        dpi=300, compression = 'lzw')
+
+scores_tidy_long %>% 
+  filter(rank == "I don't know" | rank == "N/A") %>%
+  group_by(technology, rank) %>% 
+  count(rank) %>% 
+  summarise(tot = sum(n)) -> unknown_ranks
+unknown_ranks %>% 
+  ggplot(aes(reorder(technology, tot), tot, fill=rank)) + 
+  geom_bar(position="stack", stat="identity") + 
+  scale_fill_manual(values = c("#0073C2FF", "#EFC000FF")) +
+  # geom_col(aes(fill = tot)) +
+  # scale_fill_gradient2(low = "blue",
+  # high = "red") +
+  coord_flip() + 
+  theme_minimal() + 
+  scale_y_continuous(breaks = c(2,6,10,14,18,22)) +
+  labs(x = "Technology", y = "No. of I don't know / N/A") +
+  theme(legend.title = element_blank())
+# ggsave("figs/workshop_individual_ass/summary_unknowns_detailed.tiff",
+       # dpi=300, compression = 'lzw')
 
 
 ## ---- basic stats ----
@@ -194,7 +221,7 @@ scores_num_long %>%
   ggplot(aes(x=criterion, y=rank)) + 
   scale_x_discrete(guide = guide_axis(angle = 45)) +
   geom_violin() 
-ggsave("figs/criteria_violin.tiff",
+ggsave("figs/workshop_individual_ass/criteria_violin.tiff",
        dpi=300, compression = 'lzw')
 # balloon plots
 scores_num_long %>% 
@@ -205,7 +232,7 @@ ggballoonplot(pp, x = "criterion", y = "rank",
               fill = "Freq", size = "Freq",
               ggtheme = theme_gray()) +
   scale_y_continuous(limits = c(1,5))
-ggsave("figs/criteria_balloon.tiff",
+ggsave("figs/workshop_individual_ass/criteria_balloon.tiff",
        dpi=300, compression = 'lzw')
 
 scores_num %>%
@@ -215,11 +242,12 @@ scores_num %>%
 #     model="twoway", unit = "average") -> icc_crit
 kripp.alpha(t(scores_matrix), method = "ordinal") -> kripp_alpha_crit
 kripp_alpha_crit # doesn't make sense to measure agreement across technologies
-kappam.fleiss(scores_matrix)
+# kappam.fleiss(scores_matrix)
 
 ## ---- stats and plots per tech ----
 
 i = 1
+distinct(scores_num["technology"]) -> techs
 
 icc_value <- vector("numeric",dim(techs)[1])
 icc_lbound <- vector("numeric",dim(techs)[1])
@@ -235,29 +263,29 @@ p_anova <- vector("numeric",dim(techs)[1])
 while (i <= dim(techs)[1]) {
   tech_plot <- techs[[i,1]]
   
-  # # grouped violinplots
-  # scores_num_long %>%
-  #   filter(technology == tech_plot) %>%
-  #   ggplot(aes(x=criterion, y=rank)) +
-  #   scale_x_discrete(guide = guide_axis(angle = 45)) +
-  #   labs(title = tech_plot) +
-  #   geom_violin()
-  # ggsave(paste("figs/",tech_plot,"_violin.tiff",sep=""),
-  #        dpi=300, compression = 'lzw')
-  # 
-  # # balloon plots
-  # scores_num_long %>%
-  #   group_by(technology, criterion, rank) %>%
-  #   summarise(Freq=n()) %>%
-  #   filter(technology == tech_plot) -> pp
-  # # dim(pp)
-  # ggballoonplot(pp, x = "criterion", y = "rank",
-  #               fill = "Freq", size = "Freq",
-  #               ggtheme = theme_gray()) +
-  #   scale_y_continuous(limits = c(1,5)) +
-  #   labs(title = tech_plot)
-  # ggsave(paste("figs/",tech_plot,"_balloon.tiff",sep=""),
-  #        dpi=300, compression = 'lzw')
+  # grouped violinplots
+  scores_num_long %>%
+    filter(technology == tech_plot) %>%
+    ggplot(aes(x=criterion, y=rank)) +
+    scale_x_discrete(guide = guide_axis(angle = 45)) +
+    labs(title = tech_plot) +
+    geom_violin()
+  ggsave(paste("figs/workshop_individual_ass/",tech_plot,"_violin.tiff",sep=""),
+         dpi=300, compression = 'lzw')
+
+  # balloon plots
+  scores_num_long %>%
+    group_by(technology, criterion, rank) %>%
+    summarise(Freq=n()) %>%
+    filter(technology == tech_plot) -> pp
+  # dim(pp)
+  ggballoonplot(pp, x = "criterion", y = "rank",
+                fill = "Freq", size = "Freq",
+                ggtheme = theme_gray()) +
+    scale_y_continuous(limits = c(1,5)) +
+    labs(title = tech_plot)
+  ggsave(paste("figs/workshop_individual_ass/",tech_plot,"_balloon.tiff",sep=""),
+         dpi=300, compression = 'lzw')
   
   ## ---- icc, Krippendorf's , Fleiss ----
   scores_num %>% 
@@ -318,7 +346,7 @@ data.frame(
 
 left_join(irr_table_temp, summary_coders_tech) %>% 
   rename(no.coders = n) -> irr_table
-# write.csv(irr_table, "output/irr_table_new.csv")
+write.csv(irr_table, "output/irr_table_workshop_individual_ass.csv")
 
 ## Fleiss: a significant p-value means the stat is significantly different from 0 (agreement)
 

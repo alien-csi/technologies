@@ -99,6 +99,11 @@ for(t in techs$technology){
   }
 }
 
+temp %>% 
+  filter(coder != "tim.adriaens@inbo.be") %>% 
+  filter(coder != "elena.tricarico@unifi.it") -> temp
+# write.csv(temp, "output/assessments_1stRound.csv")
+
 
 ## ---- data: recode to numeric ----
 sapply(temp[,4:12], recode_plyr) -> scores_rec
@@ -182,6 +187,8 @@ unknown_ranks %>%
   scale_y_continuous(breaks = c(2,6,10,14,18,22)) +
   labs(x = "Technology", y = "No. of I don't know / N/A") +
   theme(legend.title = element_blank())
+ggsave("figs/summary_unknowns_detailed.tiff",
+       dpi=300, compression = 'lzw')
 
 
 ## ---- basic stats ----
